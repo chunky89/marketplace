@@ -187,7 +187,7 @@ const Dashboard = () => {
                                                         </td>
                                                         <td className="px-6 py-4">
                                                             <div className="space-y-2">
-                                                                {isAdmin && order.status === "pending" && (
+                                                                {(isAdmin || order.sellerId === user?.id) && order.status === "pending" && (
                                                                     <button
                                                                         onClick={() => handleMarkAsShipped(order.id)}
                                                                         className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
@@ -195,7 +195,7 @@ const Dashboard = () => {
                                                                         Mark as Shipped
                                                                     </button>
                                                                 )}
-                                                                {isAdmin && order.status === "pending" && (
+                                                                {(isAdmin || order.buyerId === user?.id || order.sellerId === user?.id) && order.status === "pending" && (
                                                                     <button
                                                                         onClick={() => handleCancelOrder(order.id, order.itemId)}
                                                                         className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
