@@ -37,7 +37,7 @@ const Home = () => {
             <div className="bg-white p-6 rounded shadow">
                 <h2 className="text-2xl font-bold mb-2">Safe and Secure</h2>
                 <p>
-                    Get your items delivered within 24 hours, for a fixed $3 delivery fee. We handle all payments securely through our platform, ensuring a safe transaction for both buyers and sellers.
+                    Get your items delivered within 24 hours, for a fixed £3 delivery fee. We handle all payments securely through our platform, ensuring a safe transaction for both buyers and sellers.
                 </p>
             </div>
             </div>

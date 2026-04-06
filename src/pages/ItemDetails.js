@@ -29,8 +29,10 @@ const ItemDetails = () => {
         setTimeout(() => {
         // Mark item as sold
         const listings = JSON.parse(localStorage.getItem("listings")) || [];
+        const users = JSON.parse(localStorage.getItem("users")) || [];
+        const sellerProfile = users.find((savedUser) => savedUser.id === item.sellerId);
         const updatedListings = listings.map((listing) =>
-            listing.id === id ? { ...listing, sold: true } : listing
+            listing.id === Number(id) ? { ...listing, sold: true } : listing
         );
         localStorage.setItem("listings", JSON.stringify(updatedListings));
 
@@ -42,10 +44,16 @@ const ItemDetails = () => {
                     itemTitle: item.title,
                     buyerId: user.id,
                     buyerName: user.name,
+                    buyerEmail: user.email,
                     buyerPhone: user.phone,
                     buyerAddress: user.address,
+                    buyerCity: user.city,
                     sellerId: item.sellerId,
                     sellerName: item.sellerName,
+                    sellerEmail: sellerProfile?.email || "",
+                    sellerPhone: sellerProfile?.phone || "",
+                    sellerAddress: sellerProfile?.address || "",
+                    sellerCity: sellerProfile?.city || item.sellerCity || item.city,
                     price: item.price,
                     deliveryFee: 3.00,
                     total: item.price + 3.00,
@@ -90,15 +98,15 @@ const ItemDetails = () => {
                     <div className="border-t border-b py-4 mb-6">
                         <div className="flex justify-between items-center mb-2">
                             <span className="text-gray-600">Price:</span>
-                            <span className="text-gray-900 font-bold">${item.price}</span>
+                            <span className="text-gray-900 font-bold">£{item.price}</span>
                         </div>
                     <div className="flex justify-between items-center mb-2">
                         <span className="text-gray-600">Delivery Fee:</span>
-                        <span className="text-lg">$3.00</span>
+                        <span className="text-lg">£3.00</span>
                     </div>
                     <div className="flex justify-between items-center font-bold">
                         <span className="text-gray-900 text-xl">Total:</span>
-                        <span className="text-gray-900 text-xl">${item.price + 3.00}</span>
+                        <span className="text-gray-900 text-xl">£{item.price + 3.00}</span>
                     </div>
                 </div>
 

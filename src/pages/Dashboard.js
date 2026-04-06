@@ -28,6 +28,20 @@ const Dashboard = () => {
         localStorage.setItem("orders", JSON.stringify(updatedOrders));
     };
 
+    const handleCancelOrder = (orderId, itemId) => {
+        const updatedOrders = orders.map(order =>
+            order.id === orderId ? { ...order, status: "cancelled" } : order
+        );
+        const updatedListings = listings.map(listing =>
+            listing.id === itemId ? { ...listing, sold: false } : listing
+        );
+
+        setOrders(updatedOrders);
+        setListings(updatedListings);
+        localStorage.setItem("orders", JSON.stringify(updatedOrders));
+        localStorage.setItem("listings", JSON.stringify(updatedListings));
+    };
+
     const handleDeleteListing = (listingId) => {
         const updatedListings = listings.filter(listing => listing.id !== listingId);
         setListings(updatedListings);
@@ -37,7 +51,9 @@ const Dashboard = () => {
     const stats = {
         totalOrders: orders.length, 
         pendingOrders: orders.filter(order => order.status === "pending").length,
-        totalRevenue: orders.reduce((total, order) => total + order.total, 0),
+        totalRevenue: orders
+            .filter(order => order.status !== "cancelled")
+            .reduce((total, order) => total + order.total, 0),
         activeListings: listings.filter(listing => !listing.sold).length,
     };
 
@@ -56,7 +72,7 @@ const Dashboard = () => {
             </div>
             <div className="bg-white p-4 rounded-lg shadow">
                 <h3 className="text-lg font-semibold">Total Revenue</h3>
-                <p className="text-2xl">${stats.totalRevenue.toFixed(2)}</p>
+                <p className="text-2xl">£{stats.totalRevenue.toFixed(2)}</p>
             </div>
             <div className="bg-white p-4 rounded-lg shadow">
                 <h3 className="text-lg font-semibold">Active Listings</h3>
@@ -95,7 +111,10 @@ const Dashboard = () => {
                                                     <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Order ID</th>
                                                     <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Item</th>
                                                     <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Buyer</th>
+                                                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Seller</th>
                                                     <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Total</th>
+                                                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Payment</th>
+                                                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Delivery</th>
                                                     <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Status</th>
                                                     <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Actions</th>
                                                 </tr>   
@@ -108,40 +127,63 @@ const Dashboard = () => {
                                                         <td className="px-6 py-4">
                                                             <div>
                                                                 <p>{order.buyerName}</p>
-                                                                <p className="text-sm text-gray-500">{order.buyerEmail}</p>
+                                                                <p className="text-sm text-gray-500">{order.buyerEmail || "No email saved"}</p>
+                                                                <p className="text-sm text-gray-500">{order.buyerPhone || "No phone saved"}</p>
+                                                                <p className="text-sm text-gray-500">{order.buyerAddress || "No address saved"}</p>
                                                             </div>
                                                         </td>
-                                                        <td className="px-6 py-4">${order.total}</td>
                                                         <td className="px-6 py-4">
-                                                            <span className={`px-2 inline-flex text-xs 
-                                                            leading-5 font-semibold rounded-full ${
-                                                                order.status === "pending" ? "bg-yellow-100 text-yellow-800" : 
-                                                                "bg-green-100 text-green-800"
-                                                            }`}>
-                                                                {order.status}
-                                                            </span>
+                                                            <div>
+                                                                <p>{order.sellerName}</p>
+                                                                <p className="text-sm text-gray-500">{order.sellerEmail || "No email saved"}</p>
+                                                                <p className="text-sm text-gray-500">{order.sellerPhone || "No phone saved"}</p>
+                                                                <p className="text-sm text-gray-500">{order.sellerAddress || "No address saved"}</p>
+                                                            </div>
                                                         </td>
+                                                        <td className="px-6 py-4">£{order.total}</td>
                                                         <td className="px-6 py-4">
                                                             <span className="px-2 rounded bg-green-100 text-green-800 text-xs font-semibold">
                                                                 {order.paymentStatus}
                                                             </span>
                                                         </td>
                                                         <td className="px-6 py-4">
-                                                            {order.status === "pending" && (
-                                                                <span className="text-sm">
-                                                                    Due: {new Date(order.deliveryDeadline).toLocaleDateString()}
-                                                                </span>
-                                                            )}
+                                                            <div>
+                                                                <p className="text-sm">Due: {new Date(order.deliveryDeadline).toLocaleDateString()}</p>
+                                                                <p className="text-sm text-gray-500">Buyer city: {order.buyerCity || "N/A"}</p>
+                                                                <p className="text-sm text-gray-500">Seller city: {order.sellerCity || "N/A"}</p>
+                                                            </div>
                                                         </td>
                                                         <td className="px-6 py-4">
-                                                            {order.status === "pending" && (
-                                                                <button
-                                                                    onClick={() => handleMarkAsShipped(order.id)}
-                                                                    className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                                                                >
-                                                                    Mark as Shipped
-                                                                </button>
-                                                            )}
+                                                            <span className={`px-2 inline-flex text-xs 
+                                                            leading-5 font-semibold rounded-full ${
+                                                                order.status === "pending"
+                                                                    ? "bg-yellow-100 text-yellow-800"
+                                                                    : order.status === "cancelled"
+                                                                        ? "bg-red-100 text-red-800"
+                                                                        : "bg-green-100 text-green-800"
+                                                            }`}>
+                                                                {order.status}
+                                                            </span>
+                                                        </td>
+                                                        <td className="px-6 py-4">
+                                                            <div className="space-y-2">
+                                                                {order.status === "pending" && (
+                                                                    <button
+                                                                        onClick={() => handleMarkAsShipped(order.id)}
+                                                                        className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                                                                    >
+                                                                        Mark as Shipped
+                                                                    </button>
+                                                                )}
+                                                                {order.status === "pending" && (
+                                                                    <button
+                                                                        onClick={() => handleCancelOrder(order.id, order.itemId)}
+                                                                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                                                                    >
+                                                                        Cancel Order
+                                                                    </button>
+                                                                )}
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                 ))}
@@ -169,7 +211,7 @@ const Dashboard = () => {
                                     <tr key={listing.id}>
                                         <td className="px-6 py-4">{listing.id}</td>
                                         <td className="px-6 py-4">{listing.title}</td>
-                                        <td className="px-6 py-4">${listing.price}</td>
+                                        <td className="px-6 py-4">£{listing.price}</td>
                                         <td className="px-6 py-4">{listing.city}</td>
                                         <td className="px-6 py-4">
                                             <span className={`px-2 py-1 rounded text-xs ${

@@ -9,6 +9,7 @@ const CreateListing = () => {
     const [formData, setFormData] = React.useState({
         title: "",
         description: "",
+        category: "",
         price: "",
         city: user?.city || "",
         photo: "",
@@ -19,6 +20,29 @@ const CreateListing = () => {
             ...formData,
             [e.target.name]: e.target.value,
         });
+    };
+
+    const handlePhotoChange = (e) => {
+        const file = e.target.files && e.target.files[0];
+
+        if (!file) {
+            return;
+        }
+
+        if (!file.type.startsWith("image/")) {
+            setError("Please select a valid image file.");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            setError("");
+            setFormData((prev) => ({
+                ...prev,
+                photo: reader.result,
+            }));
+        };
+        reader.readAsDataURL(file);
     };
 
     React.useEffect(() => {
@@ -32,7 +56,7 @@ const CreateListing = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!formData.title || !formData.description || !formData.price || !formData.city) {
+        if (!formData.title || !formData.description || !formData.category || !formData.price || !formData.city) {
             setError("Please fill in all required fields.");
             return;
         }
@@ -146,16 +170,24 @@ const CreateListing = () => {
                     </div>
 
                     <div className="mb-4">
-                        <label className="block text-gray-700 mb-2">Photo URL</label>
+                        <label className="block text-gray-700 mb-2">Upload Photo</label>
                         <input
-                        type="url"
-                        id="photo"
-                        name="photo"
-                        value={formData.photo}
-                        onChange={handleChange}
-                        className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="https://example.com/image.jpg"
-                    />
+                            type="file"
+                            id="photo"
+                            name="photo"
+                            accept="image/*"
+                            onChange={handlePhotoChange}
+                            className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        {formData.photo && (
+                            <div className="mt-4">
+                                <img
+                                    src={formData.photo}
+                                    alt="Listing preview"
+                                    className="w-full h-48 object-cover rounded"
+                                />
+                            </div>
+                        )}
                     </div>
 
                     <button

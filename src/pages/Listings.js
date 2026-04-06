@@ -99,7 +99,7 @@ return (
                 <p className="text-gray-600 mb-2 line-clamp-2">{listing.description}</p>
             <div className="flex justify-between items-center">
                   <span className="text-xl font-bold text-blue-600">
-                    ${listing.price}
+                                        £{listing.price}
                   </span>
                   <span className="text-sm text-gray-500">{listing.city}</span>
                 </div>
