@@ -1,23 +1,33 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 
-const Dashboard = () => {   
+const Dashboard = () => {
+    const { user } = useAuth();
+    const isAdmin = user?.role === "admin";
+
     const [orders, setOrders] = useState([]);
     const [listings, setListings] = useState([]);
     const [users, setUsers] = useState([]);
     const [activeTab, setActiveTab] = useState("orders");
 
     useEffect(() => {
-        //load data
         const loadData = () => {
-            setOrders(JSON.parse(localStorage.getItem("orders")) || []);
-            setListings(JSON.parse(localStorage.getItem("listings")) || []);
+            const allOrders = JSON.parse(localStorage.getItem("orders")) || [];
+            const allListings = JSON.parse(localStorage.getItem("listings")) || [];
 
-            const allUsers = JSON.parse(localStorage.getItem("users")) || [];
-            setUsers(allUsers.filter(u => u.role !== "admin"));
+            if (isAdmin) {
+                setOrders(allOrders);
+                setListings(allListings);
+                const allUsers = JSON.parse(localStorage.getItem("users")) || [];
+                setUsers(allUsers.filter(u => u.role !== "admin"));
+            } else {
+                setOrders(allOrders.filter(o => o.buyerId === user?.id || o.sellerId === user?.id));
+                setListings(allListings.filter(l => l.sellerId === user?.id));
+            }
         };
 
         loadData();
-    }, []);
+    }, [isAdmin, user?.id]);
 
     const handleMarkAsShipped = (orderId) => {
         const updatedOrders = orders.map(order =>
@@ -59,7 +69,7 @@ const Dashboard = () => {
 
     return (    
         <div>
-            <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
+            <h1 className="text-3xl font-bold mb-6">{isAdmin ? "Admin Dashboard" : "My Dashboard"}</h1>
             {/* Stats Section */}
             <div className="grid md:grid-cols-4 gap-6 mb-8">
             <div className="bg-white p-4 rounded-lg shadow">
@@ -94,12 +104,14 @@ const Dashboard = () => {
                     >
                         Listings
                     </button>
-                    <button
-                    onClick={() => setActiveTab("users")}
-                    className={`px-4 py-2 rounded ${activeTab === "users" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"}`}
-                    >
-                        Users
-                    </button>
+                    {isAdmin && (
+                        <button
+                        onClick={() => setActiveTab("users")}
+                        className={`px-4 py-2 rounded ${activeTab === "users" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"}`}
+                        >
+                            Users
+                        </button>
+                    )}
                 </div>
                 <div>
 
@@ -127,17 +139,25 @@ const Dashboard = () => {
                                                         <td className="px-6 py-4">
                                                             <div>
                                                                 <p>{order.buyerName}</p>
-                                                                <p className="text-sm text-gray-500">{order.buyerEmail || "No email saved"}</p>
-                                                                <p className="text-sm text-gray-500">{order.buyerPhone || "No phone saved"}</p>
-                                                                <p className="text-sm text-gray-500">{order.buyerAddress || "No address saved"}</p>
+                                                                {isAdmin && (
+                                                                    <>
+                                                                        <p className="text-sm text-gray-500">{order.buyerEmail || "No email saved"}</p>
+                                                                        <p className="text-sm text-gray-500">{order.buyerPhone || "No phone saved"}</p>
+                                                                        <p className="text-sm text-gray-500">{order.buyerAddress || "No address saved"}</p>
+                                                                    </>
+                                                                )}
                                                             </div>
                                                         </td>
                                                         <td className="px-6 py-4">
                                                             <div>
                                                                 <p>{order.sellerName}</p>
-                                                                <p className="text-sm text-gray-500">{order.sellerEmail || "No email saved"}</p>
-                                                                <p className="text-sm text-gray-500">{order.sellerPhone || "No phone saved"}</p>
-                                                                <p className="text-sm text-gray-500">{order.sellerAddress || "No address saved"}</p>
+                                                                {isAdmin && (
+                                                                    <>
+                                                                        <p className="text-sm text-gray-500">{order.sellerEmail || "No email saved"}</p>
+                                                                        <p className="text-sm text-gray-500">{order.sellerPhone || "No phone saved"}</p>
+                                                                        <p className="text-sm text-gray-500">{order.sellerAddress || "No address saved"}</p>
+                                                                    </>
+                                                                )}
                                                             </div>
                                                         </td>
                                                         <td className="px-6 py-4">£{order.total}</td>
@@ -167,7 +187,7 @@ const Dashboard = () => {
                                                         </td>
                                                         <td className="px-6 py-4">
                                                             <div className="space-y-2">
-                                                                {order.status === "pending" && (
+                                                                {isAdmin && order.status === "pending" && (
                                                                     <button
                                                                         onClick={() => handleMarkAsShipped(order.id)}
                                                                         className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
@@ -175,7 +195,7 @@ const Dashboard = () => {
                                                                         Mark as Shipped
                                                                     </button>
                                                                 )}
-                                                                {order.status === "pending" && (
+                                                                {isAdmin && order.status === "pending" && (
                                                                     <button
                                                                         onClick={() => handleCancelOrder(order.id, order.itemId)}
                                                                         className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
@@ -221,12 +241,14 @@ const Dashboard = () => {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <button
-                                                onClick={() => handleDeleteListing(listing.id)}
-                                                className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                                            >
-                                                Delete
-                                            </button>
+                                            {isAdmin && (
+                                                <button
+                                                    onClick={() => handleDeleteListing(listing.id)}
+                                                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                                                >
+                                                    Delete
+                                                </button>
+                                            )}
                                         </td>   
                                     </tr>
                                 ))}
@@ -236,7 +258,7 @@ const Dashboard = () => {
                 )}
 
                             {/* Users Tab */}
-                            {activeTab === "users" && (
+                            {isAdmin && activeTab === "users" && (
                                 <div className="bg-white rounded-lg shadow p-4">
                                     <table className="min-w-full table-auto">
                                         <thead className="bg-gray-50">
