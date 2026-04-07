@@ -13,15 +13,11 @@ const Listings = () => {
 useEffect(() => {
     // Simulate fetching listings from an API
     const allListings = JSON.parse(localStorage.getItem("listings")) || [];
-    // Show unsold items from the same city, and always include user's own listings.
+    // Guests can browse only unsold listings. Registered users can browse same-city listings and see sold status.
     const userCity = normalizeCity(user?.city);
     const filteredListings = allListings.filter((listing) => {
-        if (listing.sold) {
-            return false;
-        }
-
         if (!user) {
-            return true;
+            return !listing.sold;
         }
 
         const listingCity = normalizeCity(listing.city);
@@ -82,10 +78,9 @@ return (
         ) : (
             <div className="grid md:grid-cols-3 gap-8">
                 {filteredListings.map((listing) => (
-                    <Link
-                    to={`/item/${listing.id}`}
+                    <div
                     key={listing.id}
-                    className="bg-white rounded-lg shadow overflow-hidden hover:shadow-lg transisition"
+                    className="bg-white rounded-lg shadow overflow-hidden hover:shadow-lg transition"
         >
             {listing.photo && (
                 <img
@@ -97,14 +92,39 @@ return (
             <div className="p-4">
                 <h2 className="text-xl font-bold mb-2">{listing.title}</h2>
                 <p className="text-gray-600 mb-2 line-clamp-2">{listing.description}</p>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center mb-3">
                   <span className="text-xl font-bold text-blue-600">
                                         £{listing.price}
                   </span>
                   <span className="text-sm text-gray-500">{listing.city}</span>
                 </div>
+                {listing.sold && (
+                    <p className="text-xs font-semibold text-amber-700 mb-3">Sold</p>
+                )}
+                <div className="flex justify-between items-center">
+                    <Link
+                        to={`/item/${listing.id}`}
+                        className="text-blue-500 text-sm hover:underline"
+                    >
+                        View Details
+                    </Link>
+                    {!listing.sold && (!user || listing.sellerId !== user.id) && (
+                        <Link
+                            to={`/item/${listing.id}`}
+                            className="bg-blue-500 text-white px-4 py-1.5 rounded text-sm hover:bg-blue-600"
+                        >
+                            Buy Now
+                        </Link>
+                    )}
+                    {user && listing.sellerId === user.id && (
+                        <span className="text-xs text-gray-400 italic">Your listing</span>
+                    )}
+                    {listing.sold && user && listing.sellerId !== user.id && (
+                        <span className="text-xs text-gray-400 italic">Unavailable</span>
+                    )}
+                </div>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       )}

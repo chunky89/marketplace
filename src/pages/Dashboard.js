@@ -139,7 +139,7 @@ const Dashboard = () => {
                                                         <td className="px-6 py-4">
                                                             <div>
                                                                 <p>{order.buyerName}</p>
-                                                                {isAdmin && (
+                                                                {(isAdmin || order.buyerId === user?.id || order.sellerId === user?.id) && (
                                                                     <>
                                                                         <p className="text-sm text-gray-500">{order.buyerEmail || "No email saved"}</p>
                                                                         <p className="text-sm text-gray-500">{order.buyerPhone || "No phone saved"}</p>
@@ -151,7 +151,7 @@ const Dashboard = () => {
                                                         <td className="px-6 py-4">
                                                             <div>
                                                                 <p>{order.sellerName}</p>
-                                                                {isAdmin && (
+                                                                {(isAdmin || order.buyerId === user?.id || order.sellerId === user?.id) && (
                                                                     <>
                                                                         <p className="text-sm text-gray-500">{order.sellerEmail || "No email saved"}</p>
                                                                         <p className="text-sm text-gray-500">{order.sellerPhone || "No phone saved"}</p>
@@ -169,8 +169,8 @@ const Dashboard = () => {
                                                         <td className="px-6 py-4">
                                                             <div>
                                                                 <p className="text-sm">Due: {new Date(order.deliveryDeadline).toLocaleDateString()}</p>
-                                                                <p className="text-sm text-gray-500">Buyer city: {order.buyerCity || "N/A"}</p>
-                                                                <p className="text-sm text-gray-500">Seller city: {order.sellerCity || "N/A"}</p>
+                                                                <p className="text-sm text-gray-500">Buyer city: {order.buyerCity || ""}</p>
+                                                                <p className="text-sm text-gray-500">Seller city: {order.sellerCity || ""}</p>
                                                             </div>
                                                         </td>
                                                         <td className="px-6 py-4">

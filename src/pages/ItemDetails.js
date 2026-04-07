@@ -23,6 +23,10 @@ const ItemDetails = () => {
             return;
         }
 
+        if (item?.sellerId === user.id || item?.sold) {
+            return;
+        }
+
         setPurchasing(true);
 
         // Simulate purchase process
@@ -35,6 +39,7 @@ const ItemDetails = () => {
             listing.id === Number(id) ? { ...listing, sold: true } : listing
         );
         localStorage.setItem("listings", JSON.stringify(updatedListings));
+        setItem((currentItem) => currentItem ? { ...currentItem, sold: true } : currentItem);
 
                 // Create order
                 const orders = JSON.parse(localStorage.getItem("orders")) || [];
@@ -78,6 +83,8 @@ const ItemDetails = () => {
             if (!item) {
                 return <div className="text-center mt-8">Item not found.</div>;
             }
+
+            const isOwner = user?.id === item.sellerId;
         
             return (
                 <div className="max-w-4xl mx-auto">
@@ -117,19 +124,25 @@ const ItemDetails = () => {
                 </div>
 
                 {item.sold ? (
-                    <div className="text-center p-4 bg-gray-100 rounded">
-                        <h3 className="text-xl font-bold mb-4">Status</h3>
-                        <p className="text-gray-700">This item has been sold.</p>
+                    <div className="p-6 bg-gray-100 rounded text-center">
+                        <h3 className="text-xl font-bold mb-2">Status</h3>
+                        <p className="text-gray-700 mb-4">This item is marked as sold.</p>
+                        {isOwner && (
+                            <p className="text-sm text-gray-500">This is your listing.</p>
+                        )}
                     </div>
                 ) : (
                     <div className="p-6">
                         <button
                             className="bg-blue-500 text-white px-4 py-2 rounded"
                             onClick={handlePurchase}
-                            disabled={purchasing}
+                            disabled={purchasing || isOwner}
                         >
                             {purchasing ? "Processing..." : "Purchase"}
                         </button>
+                        {isOwner && (
+                            <p className="text-sm text-gray-500 mt-2">You cannot purchase your own listing.</p>
+                        )}
                     </div>
                 )}
 
