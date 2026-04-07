@@ -48,7 +48,7 @@ return (
         <div className="mb-8">
             <div className="flex justify-between items-center mb-4">
                 <div>
-                    <h1 className="text-3x1 font-bold mb-2">Browse Items</h1>
+                    <h1 className="text-3xl font-bold mb-2">Browse Items</h1>
                     {user && (
                         <p className="text-gray-600">Showing items in <span className="font-semibold">{user.city}</span></p>
                     )}
@@ -67,7 +67,7 @@ return (
                 placeholder="Search items..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full"
+                className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
         </div>
         {filteredListings.length === 0 ? (

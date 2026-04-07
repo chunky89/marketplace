@@ -139,7 +139,19 @@ const Register = () => {
                         value={formData.city}
                         onChange={handleChange}
                         className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
-                       
+                    />
+                </div>
+
+                <div className="mb-4">
+                    <label className="block text-gray-700 mb-2">Address</label>
+                    <input
+                        type="text"
+                        id="address"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+                        placeholder="Street address"
                     />
                 </div>
 

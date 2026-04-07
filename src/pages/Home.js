@@ -26,20 +26,25 @@ const Home = () => {
             )}
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8 max-w4x1 mx-auto">
+            <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
                 <div className="bg-white p-6 rounded shadow">
                     <h2 className="text-2xl font-bold mb-2">Easy to Use</h2>
                     <p>
-                        Browse and search listing without creating an account. Create an account to start selling your items in just a few clicks.
+                        Browse and search listings without creating an account. Create an account to start selling your items in just a few clicks.
                     </p>
                 </div>
-        
-            <div className="bg-white p-6 rounded shadow">
-                <h2 className="text-2xl font-bold mb-2">Safe and Secure</h2>
-                <p>
-                    Get your items delivered within 24 hours, for a fixed £3 delivery fee. We handle all payments securely through our platform, ensuring a safe transaction for both buyers and sellers.
-                </p>
-            </div>
+                <div className="bg-white p-6 rounded shadow">
+                    <h2 className="text-2xl font-bold mb-2">Safe and Secure</h2>
+                    <p>
+                        Get your items delivered within 24 hours, for a fixed £3 delivery fee. We handle all payments securely through our platform, ensuring a safe transaction for both buyers and sellers.
+                    </p>
+                </div>
+                <div className="bg-white p-6 rounded shadow">
+                    <h2 className="text-2xl font-bold mb-2">Local Delivery</h2>
+                    <p>
+                        Every order is fulfilled within your city. Our admin team coordinates pickup and drop-off so you never have to worry about logistics.
+                    </p>
+                </div>
             </div>
         </div>
     );
